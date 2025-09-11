@@ -1,5 +1,5 @@
 import streamlit as st
-
+from retriever import chat_engine
 # --- Page setup ---
 st.set_page_config(page_title="Financial Report Agent", page_icon="💼", layout="centered")
 
@@ -23,6 +23,7 @@ uploaded_files = st.file_uploader(
 
 
 if uploaded_files:
+    dir = "files"
     st.success(f"✅ You uploaded {len(uploaded_files)} file(s).Please wait while we parse and index your files...")
     for file in uploaded_files:
         st.write(f"- {file.name}")
