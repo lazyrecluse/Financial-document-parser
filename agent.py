@@ -41,6 +41,7 @@ class ParseFlow(Workflow):
     @step
     async def create_engine(self, ev: ParsedEvent) -> StopEvent:
         parsed_data = ev.data #access data written to parsed event
+        message = ev.success_message #access success message
         storage_context = parsed_data.storage_context #accesss storage context within data
         index = load_index_from_storage(storage_context, embed_model= embed_model)
         chat_engine = index.as_chat_engine(
@@ -51,14 +52,14 @@ class ParseFlow(Workflow):
         "to your users. Ensure you do your best in offering your aid"
     ),
 )
-        return StopEvent(result = chat_engine)  
+        return StopEvent(result = [chat_engine,message])  
 
-async def main():
+async def run_workflow():
     w = ParseFlow(timeout=60, verbose=False)
     reader = SimpleDirectoryReader(input_dir="./files")
     result = await w.run(doc=reader)
-    print(str(result))
+    return result
     
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
+    final_result = asyncio.run(run_workflow())
